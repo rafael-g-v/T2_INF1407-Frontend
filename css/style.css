@@ -1,11 +1,5 @@
-/* ============================================================
-   Acadêmico — Dark Academic Design System
-   Fonte: Playfair Display (headings) + Source Sans 3 (body)
-   ============================================================ */
-
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* ── Custom Properties ────────────────────────────────────── */
 :root {
   --bg:         #0e0d16;
   --surface:    #161427;
@@ -44,7 +38,6 @@
   --font-m:     'JetBrains Mono', monospace;
 }
 
-/* ── Reset & Base ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
@@ -82,7 +75,6 @@ code, .mono {
   color: var(--gold);
 }
 
-/* ── Layout ───────────────────────────────────────────────── */
 .page-wrapper {
   display: flex;
   min-height: 100vh;
@@ -124,7 +116,6 @@ code, .mono {
   .sidebar.open .sidebar-nav { display: block; }
 }
 
-/* ── Sidebar ──────────────────────────────────────────────── */
 .sidebar-logo {
   padding: 24px 20px 20px;
   border-bottom: 1px solid var(--border);
@@ -251,7 +242,6 @@ code, .mono {
   border-top: 1px solid var(--border);
 }
 
-/* ── Auth Pages ───────────────────────────────────────────── */
 .auth-page {
   min-height: 100vh;
   display: flex;
@@ -325,7 +315,6 @@ code, .mono {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Cards ────────────────────────────────────────────────── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -407,7 +396,6 @@ code, .mono {
   gap: 4px;
 }
 
-/* ── Forms ────────────────────────────────────────────────── */
 .form-group {
   margin-bottom: 18px;
 }
@@ -467,7 +455,6 @@ select.form-control {
 .form-row { display: flex; gap: 12px; }
 .form-row .form-group { flex: 1; }
 
-/* ── Buttons ──────────────────────────────────────────────── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -533,7 +520,6 @@ select.form-control {
 .btn-full { width: 100%; }
 .btn-icon { padding: 8px; }
 
-/* ── Badges ───────────────────────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -553,7 +539,6 @@ select.form-control {
 .badge-orange  { background: var(--orange-l); color: var(--orange); }
 .badge-gray    { background: var(--surface-3); color: var(--text-3); }
 
-/* ── Alerts ───────────────────────────────────────────────── */
 .alert {
   padding: 12px 16px;
   border-radius: var(--radius-s);
@@ -569,7 +554,6 @@ select.form-control {
 .alert-info    { background: var(--blue-l); border-color: rgba(107,142,232,0.3); color: var(--blue); }
 .alert-warning { background: var(--orange-l); border-color: rgba(224,151,92,0.3); color: var(--orange); }
 
-/* ── Tables ───────────────────────────────────────────────── */
 .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
 table { width: 100%; border-collapse: collapse; }
 thead { background: var(--surface-2); }
@@ -593,7 +577,6 @@ td {
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--surface-2); }
 
-/* ── Page Header ──────────────────────────────────────────── */
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -620,7 +603,6 @@ tr:hover td { background: var(--surface-2); }
 .breadcrumb a:hover { color: var(--gold); }
 .breadcrumb-sep { color: var(--text-4); }
 
-/* ── Tabs ─────────────────────────────────────────────────── */
 .tabs { border-bottom: 1px solid var(--border); margin-bottom: 24px; display: flex; gap: 4px; }
 .tab {
   padding: 10px 16px;
@@ -650,10 +632,8 @@ tr:hover td { background: var(--surface-2); }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-/* ── Divider ──────────────────────────────────────────────── */
 .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
 
-/* ── Loading / Skeleton ───────────────────────────────────── */
 .spinner {
   width: 24px; height: 24px;
   border: 2px solid var(--border);
@@ -683,7 +663,6 @@ tr:hover td { background: var(--surface-2); }
 }
 @keyframes shimmer { to { background-position: -200% 0; } }
 
-/* ── Empty State ──────────────────────────────────────────── */
 .empty-state {
   text-align: center;
   padding: 48px 24px;
@@ -701,45 +680,141 @@ tr:hover td { background: var(--surface-2); }
 }
 .empty-state p { font-size: 0.875rem; }
 
-/* ── Task Item ────────────────────────────────────────────── */
 .task-item {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  margin-bottom: 6px;
   cursor: pointer;
-  transition: opacity var(--transition);
+  transition: border-color var(--transition), background var(--transition);
 }
-.task-item:last-child { border-bottom: none; }
-.task-item:hover { opacity: 0.85; }
+.task-item:last-child { margin-bottom: 0; }
+.task-item:hover { border-color: var(--border-s); background: var(--surface-2); }
 
-.task-status-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  margin-top: 5px;
-}
-.task-status-dot.P { background: var(--text-4); }
-.task-status-dot.E { background: var(--blue); }
-.task-status-dot.C { background: var(--green); }
+.task-item-left  { flex: 1; min-width: 0; }
+.task-item-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
 .task-title {
   font-weight: 500;
   color: var(--text);
-  font-size: 0.9rem;
-  margin-bottom: 4px;
-}
-.task-meta {
-  display: flex;
-  gap: 12px;
-  font-size: 0.78rem;
-  color: var(--text-4);
-  flex-wrap: wrap;
-  font-family: var(--font-m);
+  font-size: 0.88rem;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ── Observation ──────────────────────────────────────────── */
+.task-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.task-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-family: var(--font-m);
+  color: var(--text-4);
+  background: var(--surface-3);
+  border-radius: 99px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.task-chip-red {
+  color: var(--red);
+  background: var(--red-l);
+}
+
+.task-overdue {
+  border-color: rgba(224, 92, 110, 0.4);
+  box-shadow: 0 0 0 1px rgba(224, 92, 110, 0.2);
+}
+.task-overdue:hover { border-color: var(--red); }
+
+.task-done { opacity: 0.55; }
+.task-title-done {
+  text-decoration: line-through;
+  color: var(--text-4);
+}
+
+.task-status-select {
+  font-size: 0.75rem;
+  font-family: var(--font-m);
+  background: var(--surface-2);
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: 3px 6px;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+.task-status-select:hover { border-color: var(--border-s); }
+.task-status-select:focus { outline: none; border-color: var(--gold); }
+
+.task-group { margin-bottom: 20px; }
+.task-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0 10px;
+  font-family: var(--font-m);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  user-select: none;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.task-group-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.task-group-label { flex: 1; }
+.task-group-count {
+  background: var(--surface-3);
+  color: var(--text-4);
+  border-radius: 99px;
+  padding: 1px 7px;
+  font-size: 0.68rem;
+}
+.task-group-body { }
+.task-group-empty {
+  padding: 10px 4px;
+  font-size: 0.8rem;
+  color: var(--text-4);
+  font-family: var(--font-m);
+  font-style: italic;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 9999;
+  max-width: 320px;
+}
+.toast-visible { opacity: 1; transform: translateY(0); }
+
 .obs-item {
   padding: 14px 0;
   border-bottom: 1px solid var(--border);
@@ -762,7 +837,6 @@ tr:hover td { background: var(--surface-2); }
 .obs-time { font-size: 0.75rem; color: var(--text-4); font-family: var(--font-m); }
 .obs-text { font-size: 0.875rem; color: var(--text-2); line-height: 1.6; }
 
-/* ── Member Row ───────────────────────────────────────────── */
 .member-row {
   display: flex;
   align-items: center;
@@ -789,7 +863,6 @@ tr:hover td { background: var(--surface-2); }
 .member-name { font-size: 0.875rem; font-weight: 500; color: var(--text); }
 .member-username { font-size: 0.78rem; color: var(--text-3); font-family: var(--font-m); }
 
-/* ── Invite Banner ────────────────────────────────────────── */
 .invite-card {
   background: var(--surface);
   border: 1px solid var(--border-s);
@@ -809,7 +882,6 @@ tr:hover td { background: var(--surface-2); }
 .invite-by { font-size: 0.8rem; color: var(--text-3); font-family: var(--font-m); margin-top: 2px; }
 .invite-actions { display: flex; gap: 8px; }
 
-/* ── Modal ────────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -844,7 +916,6 @@ tr:hover td { background: var(--surface-2); }
 }
 .modal-title { font-size: 1.2rem; font-family: var(--font-h); color: var(--text); }
 
-/* ── Utilities ────────────────────────────────────────────── */
 .flex     { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
@@ -867,11 +938,39 @@ tr:hover td { background: var(--surface-2); }
 .font-mono { font-family: var(--font-m); }
 .hidden { display: none !important; }
 
-/* ── Decorative accent line on active page ────────────────── */
 .page-accent {
   width: 40px;
   height: 3px;
   background: var(--gold);
   border-radius: 2px;
   margin-bottom: 8px;
+}
+
+.task-done { opacity: 0.6; }
+.task-title-done {
+  text-decoration: line-through;
+  color: var(--text-4);
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 9999;
+  max-width: 320px;
+}
+.toast-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
