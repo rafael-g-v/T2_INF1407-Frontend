@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tarefa — Acadêmico</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="page-wrapper">
+  <div id="sidebar-root" class="sidebar"></div>
+
+  <main class="main-content" id="task-body">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="dashboard.html">Projetos</a>
+      <span class="breadcrumb-sep">/</span>
+      <a href="#" id="link-projeto">Projeto</a>
+      <span class="breadcrumb-sep">/</span>
+      <span id="task-titulo">…</span>
+    </div>
+
+    <!-- Header da tarefa -->
+    <div class="page-header">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+          <h1 class="page-title" id="task-titulo" style="margin:0"></h1>
+          <span id="task-status-badge"></span>
+        </div>
+        <p id="task-descricao" style="color:var(--text-3);line-height:1.6;margin-bottom:8px"></p>
+        <div id="task-meta" style="display:flex;gap:16px;flex-wrap:wrap;font-size:0.85rem;color:var(--text-3)"></div>
+      </div>
+      <div id="task-actions" style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap"></div>
+    </div>
+
+    <!-- Troca rápida de status (qualquer membro) -->
+    <div class="card mb-6" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <label class="form-label" style="margin:0;white-space:nowrap">Atualizar status:</label>
+      <select id="quick-status" class="form-control" style="max-width:200px">
+        <option value="P">Pendente</option>
+        <option value="E">Em andamento</option>
+        <option value="C">Concluída</option>
+      </select>
+      <span class="text-xs text-muted">(salvo automaticamente)</span>
+    </div>
+
+    <!-- Seção de observações -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">
+          Observações
+          <span class="badge badge-gray" id="obs-count" style="margin-left:8px">0</span>
+        </h2>
+      </div>
+
+      <!-- Lista de observações -->
+      <div id="obs-list"></div>
+
+      <hr class="divider" />
+
+      <!-- Nova observação -->
+      <div>
+        <h4 style="font-size:0.85rem;color:var(--text-3);margin-bottom:10px;font-family:var(--font-m);text-transform:uppercase;letter-spacing:0.07em">
+          Adicionar observação
+        </h4>
+        <div id="alert-obs"></div>
+        <form id="form-obs" novalidate>
+          <div class="form-group">
+            <textarea
+              id="obs-texto"
+              class="form-control"
+              rows="3"
+              placeholder="Escreva um comentário sobre esta tarefa…"
+              required
+              style="resize:none;overflow:hidden"
+            ></textarea>
+          </div>
+          <div style="display:flex;justify-content:flex-end">
+            <button id="btn-send-obs" type="submit" class="btn btn-primary btn-sm">
+              Enviar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal: Editar Tarefa (líder) -->
+<div id="modal-edit-task" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Editar Tarefa</h2>
+      <button id="btn-close-edit-task" class="btn btn-ghost btn-icon">✕</button>
+    </div>
+    <div id="alert-edit-task"></div>
+    <form id="form-edit-task" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="edit-titulo">Título</label>
+        <input id="edit-titulo" type="text" class="form-control" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-descricao">Descrição</label>
+        <textarea id="edit-descricao" class="form-control" rows="3" required></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="edit-status">Status</label>
+          <select id="edit-status" class="form-control">
+            <option value="P">Pendente</option>
+            <option value="E">Em andamento</option>
+            <option value="C">Concluída</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-prazo">Prazo</label>
+          <input id="edit-prazo" type="date" class="form-control" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-responsavel">Responsável</label>
+        <select id="edit-responsavel" class="form-control">
+          <option value="">— Sem responsável —</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button type="button" id="btn-cancel-edit-task" class="btn btn-secondary">Cancelar</button>
+        <button type="submit" id="btn-save-edit-task" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="js/task.js"></script>
+<script>
+  document.getElementById('btn-cancel-edit-task')?.addEventListener('click', () =>
+    document.getElementById('modal-edit-task')?.classList.add('hidden'));
+</script>
+</body>
+</html>

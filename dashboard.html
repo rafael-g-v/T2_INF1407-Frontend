@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projetos — Acadêmico</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="page-wrapper">
+  <!-- Sidebar injetada pelo JS -->
+  <div id="sidebar-root" class="sidebar"></div>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <div class="page-accent"></div>
+        <h1 class="page-title">Meus Projetos</h1>
+        <p class="page-subtitle">Gerencie e colabore em projetos acadêmicos</p>
+      </div>
+      <button id="btn-new-project" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Novo Projeto
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="projetos">
+        📁 Projetos
+        <span class="tab-badge" id="projects-count">0</span>
+      </button>
+      <button class="tab" data-tab="convites">
+        📬 Convites
+        <span class="tab-badge hidden" id="convites-badge">0</span>
+      </button>
+    </div>
+
+    <!-- Aba: Projetos -->
+    <div class="tab-content active" data-content="projetos">
+      <div style="margin-bottom:16px">
+        <input
+          id="search-projects"
+          type="search"
+          class="form-control"
+          placeholder="🔍 Buscar projeto pelo nome ou descrição…"
+          style="max-width:380px"
+        />
+      </div>
+      <div class="card-grid" id="projects-grid">
+        <div class="loading-center"><span class="spinner"></span> Carregando…</div>
+      </div>
+    </div>
+
+    <!-- Aba: Convites -->
+    <div class="tab-content" data-content="convites">
+      <div id="invites-list">
+        <div class="loading-center"><span class="spinner"></span></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal: Novo Projeto -->
+<div id="modal-new-project" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Novo Projeto</h2>
+      <button id="btn-close-modal" class="btn btn-ghost btn-icon">✕</button>
+    </div>
+    <div id="alert-new-project"></div>
+    <form id="form-new-project" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="new-nome">Nome do projeto</label>
+        <input id="new-nome" type="text" class="form-control" placeholder="Ex: TCC 2026" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="new-descricao">Descrição</label>
+        <textarea
+          id="new-descricao"
+          class="form-control"
+          placeholder="Descreva brevemente o objetivo do projeto…"
+          rows="3"
+          required
+        ></textarea>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button type="button" id="btn-cancel-modal" class="btn btn-secondary">Cancelar</button>
+        <button type="submit" id="btn-save-project" class="btn btn-primary">Criar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="js/dashboard.js"></script>
+<script>
+  // Fecha modal no botão cancelar
+  document.getElementById('btn-cancel-modal')?.addEventListener('click', () => {
+    document.getElementById('modal-new-project')?.classList.add('hidden');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Acadêmico</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-icon">A</div>
+      <h1>Acadêmico</h1>
+      <p>Gerencie seus projetos acadêmicos em equipe</p>
+    </div>
+
+    <div id="alert-area"></div>
+
+    <form id="form-login" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="username">Usuário</label>
+        <input
+          id="username"
+          type="text"
+          class="form-control"
+          placeholder="seu_username"
+          autocomplete="username"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Senha</label>
+        <input
+          id="password"
+          type="password"
+          class="form-control"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+
+      <button id="btn-login" type="submit" class="btn btn-primary btn-lg btn-full">
+        Entrar
+      </button>
+    </form>
+
+    <hr class="divider" />
+
+    <p class="text-center text-sm text-muted">
+      Não tem uma conta?
+      <a href="register.html">Criar conta</a>
+    </p>
+  </div>
+</div>
+
+<script type="module" src="js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projeto — Acadêmico</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="page-wrapper">
+  <div id="sidebar-root" class="sidebar"></div>
+
+  <main class="main-content" id="project-body">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="dashboard.html">Projetos</a>
+      <span class="breadcrumb-sep">/</span>
+      <span id="project-name">…</span>
+    </div>
+
+    <!-- Cabeçalho do projeto -->
+    <div class="page-header">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
+          <h1 class="page-title" id="project-name" style="margin:0"></h1>
+          <span id="project-badge"></span>
+        </div>
+        <p id="project-desc" style="color:var(--text-3);font-size:0.9rem;margin-bottom:6px"></p>
+        <div id="project-meta"></div>
+      </div>
+      <div id="project-actions" style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="tarefas">
+        ✅ Tarefas
+        <span class="tab-badge" id="tarefas-count">0</span>
+      </button>
+      <button class="tab" data-tab="membros">
+        👥 Membros
+        <span class="tab-badge" id="membros-count">0</span>
+      </button>
+      <button class="tab hidden" id="tab-convites" data-tab="convites">
+        📨 Convites
+        <span class="tab-badge" id="convites-count">0</span>
+      </button>
+    </div>
+
+    <!-- Aba: Tarefas -->
+    <div class="tab-content active" data-content="tarefas">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <button id="btn-new-task" class="btn btn-primary btn-sm hidden">
+          + Nova Tarefa
+        </button>
+      </div>
+      <div id="tarefas-list">
+        <div class="loading-center"><span class="spinner"></span></div>
+      </div>
+    </div>
+
+    <!-- Aba: Membros -->
+    <div class="tab-content" data-content="membros">
+      <div id="membros-list">
+        <div class="loading-center"><span class="spinner"></span></div>
+      </div>
+    </div>
+
+    <!-- Aba: Convites (Líder) -->
+    <div class="tab-content" data-content="convites">
+      <div class="card mb-6">
+        <h3 class="card-title mb-4">Convidar membro</h3>
+        <div id="alert-invite"></div>
+        <form id="form-invite" novalidate style="display:flex;gap:10px;flex-wrap:wrap">
+          <div class="form-group" style="flex:1;min-width:200px;margin-bottom:0">
+            <input
+              id="invite-username"
+              type="text"
+              class="form-control"
+              placeholder="username do colega"
+              required
+            />
+          </div>
+          <button id="btn-send-invite" type="submit" class="btn btn-primary" style="align-self:flex-end">
+            Convidar
+          </button>
+        </form>
+      </div>
+
+      <h3 style="font-size:0.9rem;color:var(--text-3);margin-bottom:12px;font-family:var(--font-m)">
+        HISTÓRICO DE CONVITES
+      </h3>
+      <div id="convites-list"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal: Criar / Editar Tarefa -->
+<div id="modal-tarefa" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="tarefa-modal-title">Nova Tarefa</h2>
+      <button id="btn-close-tarefa" class="btn btn-ghost btn-icon">✕</button>
+    </div>
+    <div id="alert-tarefa"></div>
+    <form id="form-tarefa" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="tarefa-titulo">Título</label>
+        <input id="tarefa-titulo" type="text" class="form-control" placeholder="Ex: Revisão bibliográfica" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="tarefa-descricao">Descrição</label>
+        <textarea id="tarefa-descricao" class="form-control" rows="3" placeholder="Detalhe o que deve ser feito…" required></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="tarefa-status">Status</label>
+          <select id="tarefa-status" class="form-control">
+            <option value="P">Pendente</option>
+            <option value="E">Em andamento</option>
+            <option value="C">Concluída</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tarefa-prazo">Prazo</label>
+          <input id="tarefa-prazo" type="date" class="form-control" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="tarefa-responsavel">Responsável</label>
+        <select id="tarefa-responsavel" class="form-control">
+          <option value="">— Sem responsável —</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+        <button type="button" id="btn-cancel-tarefa" class="btn btn-secondary">Cancelar</button>
+        <button type="submit" id="btn-save-tarefa" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Editar Projeto -->
+<div id="modal-edit-project" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Editar Projeto</h2>
+      <button id="btn-close-edit" class="btn btn-ghost btn-icon">✕</button>
+    </div>
+    <div id="alert-edit-project"></div>
+    <form id="form-edit-project" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="edit-nome">Nome</label>
+        <input id="edit-nome" type="text" class="form-control" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="edit-descricao">Descrição</label>
+        <textarea id="edit-descricao" class="form-control" rows="3" required></textarea>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button type="button" id="btn-cancel-edit" class="btn btn-secondary">Cancelar</button>
+        <button type="submit" id="btn-save-edit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="js/project.js"></script>
+<script>
+  document.getElementById('btn-cancel-tarefa')?.addEventListener('click', () =>
+    document.getElementById('modal-tarefa')?.classList.add('hidden'));
+  document.getElementById('btn-cancel-edit')?.addEventListener('click', () =>
+    document.getElementById('modal-edit-project')?.classList.add('hidden'));
+</script>
+</body>
+</html>

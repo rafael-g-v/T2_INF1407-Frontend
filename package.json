@@ -1,0 +1,13 @@
+{
+  "name": "academico-frontend",
+  "version": "1.0.0",
+  "description": "Frontend do Sistema de Gerenciamento de Projetos Acadêmicos",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "serve": "python3 -m http.server 5173"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

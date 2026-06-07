@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu Perfil — Acadêmico</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="page-wrapper">
+  <div id="sidebar-root" class="sidebar"></div>
+
+  <main class="main-content">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <div class="page-accent"></div>
+        <h1 class="page-title">Meu Perfil</h1>
+        <p class="page-subtitle">Gerencie suas informações pessoais</p>
+      </div>
+    </div>
+
+    <!-- Card do usuário -->
+    <div class="card mb-6" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div
+        id="profile-avatar"
+        style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold-d),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:700;font-size:22px;color:var(--bg);flex-shrink:0"
+      >??</div>
+      <div>
+        <h2 id="profile-name" style="margin-bottom:2px"></h2>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <span class="text-sm text-muted font-mono" id="profile-username"></span>
+          <span class="text-sm text-muted" id="profile-email"></span>
+          <span class="badge badge-gold font-mono" id="profile-matricula"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulário de edição do perfil -->
+    <div class="card" style="max-width:520px">
+      <h3 style="margin-bottom:20px">✏️ Editar Dados</h3>
+      <div id="alert-profile"></div>
+      <form id="form-edit-profile" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="edit-nome">Nome</label>
+            <input id="edit-nome" type="text" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-sobrenome">Sobrenome</label>
+            <input id="edit-sobrenome" type="text" class="form-control" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-matricula">Matrícula</label>
+          <input id="edit-matricula" type="text" class="form-control" required />
+        </div>
+        <p class="form-hint mb-4">Username e e-mail não podem ser alterados por aqui.</p>
+        <button id="btn-save-profile" type="submit" class="btn btn-primary">
+          Salvar alterações
+        </button>
+      </form>
+    </div>
+
+  </main>
+</div>
+
+<script type="module" src="js/profile.js"></script>
+</body>
+</html>
