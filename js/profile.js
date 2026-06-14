@@ -2,9 +2,10 @@
  * profile.ts — Página de perfil do usuário.
  *
  * Funcionalidades:
- *  - Visualizar e editar dados do perfil (nome, sobrenome, matrícula)
+ *  - Visualizar e editar dados do perfil (nome, sobrenome, matrícula).
+ *  - Trocar a senha com confirmação da senha atual.
  */
-import { AuthAPI } from "./api.js";
+import { AuthAPI, TokenStore } from "./api.js";
 import { requireAuth, loadSidebar, showAlert, setLoading } from "./auth.js";
 requireAuth();
 // ── Bootstrap ─────────────────────────────────────────────────────────────
@@ -64,5 +65,44 @@ formEdit.addEventListener("submit", async (e) => {
     }
     finally {
         setLoading(btnSaveProfile, false, "Salvar");
+    }
+});
+// ── Formulário de troca de senha ──────────────────────────────────────────
+const formSenha = document.getElementById("form-change-password");
+const btnSaveSenha = document.getElementById("btn-save-senha");
+formSenha.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const senhaAtual = document.getElementById("senha-atual").value;
+    const novaSenha = document.getElementById("nova-senha").value;
+    const novaSenha2 = document.getElementById("nova-senha2").value;
+    // Validações no cliente para evitar chamada desnecessária
+    if (!senhaAtual || !novaSenha || !novaSenha2) {
+        showAlert("alert-senha", "Preencha todos os campos de senha.");
+        return;
+    }
+    if (novaSenha !== novaSenha2) {
+        showAlert("alert-senha", "As novas senhas não coincidem.");
+        return;
+    }
+    if (novaSenha.length < 8) {
+        showAlert("alert-senha", "A nova senha deve ter pelo menos 8 caracteres.");
+        return;
+    }
+    setLoading(btnSaveSenha, true, "Alterar senha");
+    try {
+        const result = await AuthAPI.trocarSenha(senhaAtual, novaSenha, novaSenha2);
+        // Atualiza os tokens na sessão (o backend emite um novo par após trocar a senha)
+        if (result.tokens) {
+            TokenStore.set(result.tokens.access, result.tokens.refresh);
+        }
+        // Limpa os campos do formulário
+        formSenha.reset();
+        showAlert("alert-senha", "Senha alterada com sucesso!", "success");
+    }
+    catch (err) {
+        showAlert("alert-senha", err.message);
+    }
+    finally {
+        setLoading(btnSaveSenha, false, "Alterar senha");
     }
 });

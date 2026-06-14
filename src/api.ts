@@ -255,6 +255,35 @@ export const AuthAPI = {
     if (!res.ok) throw new Error(await extractError(res));
     return res.json();
   },
+
+  /**
+   * Troca a senha do usuário autenticado.
+   *
+   * Em caso de sucesso, o backend retorna novos tokens JWT.
+   * O frontend deve atualizar o TokenStore para manter a sessão ativa.
+   *
+   * @param senhaAtual  Senha atual do usuário (para confirmação).
+   * @param novaSenha   Nova senha desejada.
+   * @param novaSenha2  Confirmação da nova senha.
+   * @returns           Objeto com mensagem e novos tokens JWT.
+   */
+  async trocarSenha(
+    senhaAtual: string,
+    novaSenha: string,
+    novaSenha2: string
+  ): Promise<{ mensagem: string; tokens: LoginResponse }> {
+    const res = await apiFetch("/auth/trocar-senha/", {
+      method: "POST",
+      body: JSON.stringify({
+        senha_atual: senhaAtual,
+        nova_senha: novaSenha,
+        nova_senha2: novaSenha2,
+        refresh_token: TokenStore.getRefresh(), // para invalidar o token atual no backend
+      }),
+    });
+    if (!res.ok) throw new Error(await extractError(res));
+    return res.json();
+  },
 };
 
 // ── Projetos ──────────────────────────────────────────────────────────────
