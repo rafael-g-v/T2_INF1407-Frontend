@@ -11,8 +11,6 @@
   <div id="sidebar-root" class="sidebar"></div>
 
   <main class="main-content">
-
-    <!-- Header -->
     <div class="page-header">
       <div>
         <div class="page-accent"></div>
@@ -21,51 +19,100 @@
       </div>
     </div>
 
-    <!-- Card do usuário -->
-    <div class="card mb-6" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-      <div
-        id="profile-avatar"
-        style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold-d),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:700;font-size:22px;color:var(--bg);flex-shrink:0"
-      >??</div>
-      <div>
-        <h2 id="profile-name" style="margin-bottom:2px"></h2>
-        <div style="display:flex;gap:16px;flex-wrap:wrap">
-          <span class="text-sm text-muted font-mono" id="profile-username"></span>
-          <span class="text-sm text-muted" id="profile-email"></span>
-          <span class="badge badge-gold font-mono" id="profile-matricula"></span>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:24px">
+
+      <div class="card" style="width:100%;max-width:520px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        <div
+          id="profile-avatar"
+          style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold-d),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:700;font-size:22px;color:var(--bg);flex-shrink:0"
+        >??</div>
+        <div>
+          <h2 id="profile-name" style="margin-bottom:2px"></h2>
+          <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <span class="text-sm text-muted font-mono" id="profile-username"></span>
+            <span class="text-sm text-muted" id="profile-email"></span>
+            <span class="badge badge-gold font-mono" id="profile-matricula"></span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Formulário de edição do perfil -->
-    <div class="card" style="max-width:520px">
-      <h3 style="margin-bottom:20px">✏️ Editar Dados</h3>
-      <div id="alert-profile"></div>
-      <form id="form-edit-profile" novalidate>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="edit-nome">Nome</label>
-            <input id="edit-nome" type="text" class="form-control" required />
+      <div class="card" style="width:100%;max-width:520px">
+        <h3 style="margin-bottom:20px">Editar Dados</h3>
+        <div id="alert-profile"></div>
+        <form id="form-edit-profile" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="edit-nome">Nome</label>
+              <input id="edit-nome" type="text" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="edit-sobrenome">Sobrenome</label>
+              <input id="edit-sobrenome" type="text" class="form-control" required />
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="edit-sobrenome">Sobrenome</label>
-            <input id="edit-sobrenome" type="text" class="form-control" required />
+            <label class="form-label" for="edit-matricula">Matrícula</label>
+            <input id="edit-matricula" type="text" class="form-control" required />
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="edit-matricula">Matrícula</label>
-          <input id="edit-matricula" type="text" class="form-control" required />
-        </div>
-        <p class="form-hint mb-4">Username e e-mail não podem ser alterados por aqui.</p>
-        <button id="btn-save-profile" type="submit" class="btn btn-primary">
-          Salvar alterações
-        </button>
-      </form>
+          <p class="form-hint mb-4">Username e e-mail não podem ser alterados por aqui.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+            <button id="btn-save-profile" type="submit" class="btn btn-primary">
+              Salvar alterações
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-toggle-senha">
+              Alterar senha
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" id="card-change-password" style="width:100%;max-width:520px;display:none">
+        <h3 style="margin-bottom:20px">Alterar Senha</h3>
+        <div id="alert-senha"></div>
+        <form id="form-change-password" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="senha-atual">Senha atual</label>
+            <input id="senha-atual" type="password" class="form-control" required autocomplete="current-password" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="nova-senha">Nova senha</label>
+            <input id="nova-senha" type="password" class="form-control" required autocomplete="new-password" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="nova-senha2">Confirmar nova senha</label>
+            <input id="nova-senha2" type="password" class="form-control" required autocomplete="new-password" />
+          </div>
+          <p class="form-hint mb-4">A nova senha deve ter pelo menos 8 caracteres.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button id="btn-save-senha" type="submit" class="btn btn-primary">
+              Confirmar
+            </button>
+            <button type="button" class="btn btn-ghost" id="btn-cancel-senha">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+
     </div>
 
   </main>
 </div>
 
 <script type="module" src="js/profile.js"></script>
+<script>
+  document.getElementById('btn-toggle-senha').addEventListener('click', function () {
+    const card = document.getElementById('card-change-password');
+    card.style.display = 'block';
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.style.display = 'none';
+  });
+  document.getElementById('btn-cancel-senha').addEventListener('click', function () {
+    document.getElementById('card-change-password').style.display = 'none';
+    document.getElementById('btn-toggle-senha').style.display = '';
+    document.getElementById('form-change-password').reset();
+    document.getElementById('alert-senha').innerHTML = '';
+  });
+</script>
 </body>
 </html>
