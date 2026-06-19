@@ -816,7 +816,7 @@ tr:hover td { background: var(--surface-2); }
 .toast-visible { opacity: 1; transform: translateY(0); }
 
 #obs-list {
-  max-height: 420px;
+  height: 420px;
   overflow-y: auto;
   padding-right: 6px;
 }
