@@ -27,11 +27,11 @@ export function relativeTime(iso) {
     if (mins < 1)
         return "agora mesmo";
     if (mins < 60)
-        return `há ${mins}min`;
+        return `ha ${mins}min`;
     const hrs = Math.floor(mins / 60);
     if (hrs < 24)
-        return `há ${hrs}h`;
-    return `há ${Math.floor(hrs / 24)}d`;
+        return `ha ${hrs}h`;
+    return `ha ${Math.floor(hrs / 24)}d`;
 }
 export function showAlert(containerId, msg, type = "error") {
     const el = document.getElementById(containerId);
@@ -71,7 +71,6 @@ export function iniciais(nome) {
     return nome.split(" ").filter(Boolean).slice(0, 2)
         .map((w) => w[0]?.toUpperCase() ?? "").join("");
 }
-// Atualiza o item ativo no menu lateral sem reconstruí-lo
 export function setSidebarActive(key) {
     document.querySelectorAll(".nav-link[data-nav-key]").forEach((el) => {
         el.classList.toggle("active", el.dataset["navKey"] === key);
@@ -103,8 +102,7 @@ export async function loadSidebar(activePage) {
         if (cached)
             perfil = JSON.parse(cached);
     }
-    const nomeCompleto = perfil ? `${perfil.nome} ${perfil.sobrenome}` : "Usuário";
-    const initial = perfil ? iniciais(nomeCompleto) : "U";
+    const nomeCompleto = perfil ? `${perfil.nome} ${perfil.sobrenome}` : "Usuario";
     const matricula = perfil?.matricula ?? "";
     const navLinks = [
         { href: "/dashboard.html", key: "dashboard", icon: ICONS.grid, label: "Projetos" },
@@ -115,17 +113,12 @@ export async function loadSidebar(activePage) {
     root.innerHTML = `
     <div class="sidebar-logo">
       <div class="logo-mark">
-        <div class="logo-icon">A</div>
-        <div>
-          <div class="logo-text">Acadêmico</div>
-          <span class="logo-sub">Projetos &amp; Equipes</span>
-        </div>
+        <div class="logo-text">Gerencie seus projetos</div>
       </div>
     </div>
 
     <div class="sidebar-user">
       <div class="user-info">
-        <div class="user-avatar">${initial}</div>
         <div>
           <div class="user-name">${nomeCompleto}</div>
           <div class="user-role font-mono">${matricula}</div>

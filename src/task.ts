@@ -16,12 +16,14 @@ let tarefa: Tarefa | null = null;
 let observacoes: Observacao[] = [];
 let membros: MembroProjeto[] = [];
 let currentUsername = "";
+let currentNomeCompleto = "";
 let isLider = false;
 let pollingInterval: ReturnType<typeof setInterval> | null = null;
 
 (async () => {
   const perfil = await loadSidebar("dashboard");
   currentUsername = perfil?.username ?? "";
+  currentNomeCompleto = perfil ? `${perfil.nome} ${perfil.sobrenome}` : currentUsername;
   try {
     [tarefa, membros] = await Promise.all([
       TarefaAPI.detalhar(projetoId, tarefaId),
@@ -39,7 +41,7 @@ let pollingInterval: ReturnType<typeof setInterval> | null = null;
   }
 })();
 
-// ── Polling ───────────────────────────────────────────────────────────────
+// -- Polling
 
 function startPolling(): void {
   if (pollingInterval) clearInterval(pollingInterval);
@@ -51,12 +53,12 @@ document.addEventListener("visibilitychange", () => {
   else startPolling();
 });
 
-// ── Render tarefa ─────────────────────────────────────────────────────────
+// -- Render tarefa
 
 function renderTarefa(): void {
   if (!tarefa) return;
   const statusBadge: Record<string, string> = { P: "badge-gray", E: "badge-blue", C: "badge-green" };
-  const statusLabels: Record<string, string> = { P: "Pendente", E: "Em andamento", C: "Concluída" };
+  const statusLabels: Record<string, string> = { P: "Pendente", E: "Em andamento", C: "Concluida" };
 
   document.getElementById("task-titulo")!.textContent = tarefa.titulo;
   document.getElementById("task-descricao")!.textContent = tarefa.descricao;
@@ -72,7 +74,7 @@ function renderTarefa(): void {
   const respHtml = tarefa.responsavel
     ? `<span style="display:flex;align-items:center;gap:4px">
          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-         Responsável: <strong>${tarefa.responsavel.username}</strong>
+         Responsavel: <strong>${tarefa.responsavel.username}</strong>
        </span>`
     : "";
 
@@ -87,7 +89,6 @@ function renderTarefa(): void {
   const statusSel = document.getElementById("quick-status") as HTMLSelectElement;
   if (statusSel) {
     statusSel.value = tarefa.status;
-    // Remove listeners antigos clonando o elemento
     const fresh = statusSel.cloneNode(true) as HTMLSelectElement;
     statusSel.replaceWith(fresh);
     fresh.addEventListener("change", () => quickStatusChange(fresh));
@@ -111,9 +112,11 @@ function renderTarefa(): void {
 
 async function quickStatusChange(sel: HTMLSelectElement): Promise<void> {
   const newStatus = sel.value as "P" | "E" | "C";
+  if (!tarefa || newStatus === tarefa.status) return;
   sel.disabled = true;
   try {
     tarefa = await TarefaAPI.atualizar(projetoId, tarefaId, { status: newStatus });
+    await loadObservacoes();
     renderTarefa();
   } catch (err) {
     alert((err as Error).message);
@@ -123,7 +126,7 @@ async function quickStatusChange(sel: HTMLSelectElement): Promise<void> {
   }
 }
 
-// ── Observações ───────────────────────────────────────────────────────────
+// -- Observacoes
 
 async function loadObservacoes(silent = false): Promise<void> {
   const el = document.getElementById("obs-list")!;
@@ -145,7 +148,7 @@ function renderObservacoes(): void {
         <div class="empty-state-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         </div>
-        <h3>Nenhuma observação ainda</h3>
+        <h3>Nenhuma observacao ainda</h3>
         <p>Seja o primeiro a comentar nesta tarefa.</p>
       </div>`;
     return;
@@ -188,7 +191,7 @@ function renderObservacoes(): void {
   });
   el.querySelectorAll<HTMLButtonElement>(".btn-del-obs").forEach((btn) => {
     btn.addEventListener("click", () => {
-      if (confirm("Excluir esta observação?")) deleteObs(Number(btn.dataset["id"]));
+      if (confirm("Excluir esta observacao?")) deleteObs(Number(btn.dataset["id"]));
     });
   });
   el.querySelectorAll<HTMLButtonElement>(".btn-save-obs-edit").forEach((btn) => {
@@ -207,7 +210,7 @@ function toggleObsEdit(id: number, open: boolean): void {
 async function saveObsEdit(id: number, btn: HTMLButtonElement): Promise<void> {
   const area = document.getElementById(`obs-edit-area-${id}`) as HTMLTextAreaElement;
   const texto = area.value.trim();
-  if (!texto) { alert("A observação não pode ficar vazia."); return; }
+  if (!texto) { alert("A observacao nao pode ficar vazia."); return; }
   setLoading(btn, true, "Salvar");
   try {
     await ObsAPI.atualizar(projetoId, tarefaId, id, texto);
@@ -228,7 +231,7 @@ async function deleteObs(id: number): Promise<void> {
   }
 }
 
-// ── Nova observação ───────────────────────────────────────────────────────
+// -- Nova observacao
 
 function setupUI(): void {
   const form     = document.getElementById("form-obs")    as HTMLFormElement;
@@ -259,12 +262,12 @@ function setupUI(): void {
   });
 }
 
-// ── Editar tarefa ─────────────────────────────────────────────────────────
+// -- Editar tarefa
 
 function openEditTask(): void {
   if (!tarefa) return;
   const sel = document.getElementById("edit-responsavel") as HTMLSelectElement;
-  sel.innerHTML = `<option value="">— Sem responsável —</option>` +
+  sel.innerHTML = `<option value="">— Sem responsavel —</option>` +
     membros.map((m) => `<option value="${m.usuario.id}">${escHtml(m.usuario.nome_completo)} (@${m.usuario.username})</option>`).join("");
   (document.getElementById("edit-titulo")    as HTMLInputElement).value    = tarefa.titulo;
   (document.getElementById("edit-descricao") as HTMLTextAreaElement).value = tarefa.descricao;
@@ -284,17 +287,18 @@ document.getElementById("form-edit-task")?.addEventListener("submit", async (e) 
   const btn = document.getElementById("btn-save-edit-task") as HTMLButtonElement;
   const titulo    = (document.getElementById("edit-titulo")      as HTMLInputElement).value.trim();
   const descricao = (document.getElementById("edit-descricao")   as HTMLTextAreaElement).value.trim();
-  const status    = (document.getElementById("edit-status")      as HTMLSelectElement).value as "P" | "E" | "C";
+  const st        = (document.getElementById("edit-status")      as HTMLSelectElement).value as "P" | "E" | "C";
   const prazo     = (document.getElementById("edit-prazo")       as HTMLInputElement).value || null;
   const respIdStr = (document.getElementById("edit-responsavel") as HTMLSelectElement).value;
   const responsavel_id = respIdStr ? Number(respIdStr) : null;
 
-  if (!titulo || !descricao) { showAlert("alert-edit-task", "Preencha título e descrição."); return; }
+  if (!titulo || !descricao) { showAlert("alert-edit-task", "Preencha titulo e descricao."); return; }
 
   setLoading(btn, true, "Salvar");
   try {
-    tarefa = await TarefaAPI.atualizar(projetoId, tarefaId, { titulo, descricao, status, prazo, responsavel_id });
+    tarefa = await TarefaAPI.atualizar(projetoId, tarefaId, { titulo, descricao, status: st, prazo, responsavel_id });
     document.getElementById("modal-edit-task")!.classList.add("hidden");
+    await loadObservacoes();
     renderTarefa();
   } catch (err) {
     showAlert("alert-edit-task", (err as Error).message);
@@ -312,8 +316,6 @@ async function confirmDeleteTask(): Promise<void> {
     alert((err as Error).message);
   }
 }
-
-// ── Utilitário ────────────────────────────────────────────────────────────
 
 function escHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

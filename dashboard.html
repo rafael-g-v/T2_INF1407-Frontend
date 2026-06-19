@@ -29,11 +29,11 @@
     <!-- Tabs -->
     <div class="tabs">
       <button class="tab active" data-tab="projetos">
-        📁 Projetos
+        Projetos
         <span class="tab-badge" id="projects-count">0</span>
       </button>
       <button class="tab" data-tab="convites">
-        📬 Convites
+        Convites
         <span class="tab-badge hidden" id="convites-badge">0</span>
       </button>
     </div>
@@ -45,7 +45,7 @@
           id="search-projects"
           type="search"
           class="form-control"
-          placeholder="🔍 Buscar projeto pelo nome ou descrição…"
+          placeholder="Buscar projeto pelo nome ou descrição..."
           style="max-width:380px"
         />
       </div>
@@ -68,7 +68,7 @@
   <div class="modal">
     <div class="modal-header">
       <h2 class="modal-title">Novo Projeto</h2>
-      <button id="btn-close-modal" class="btn btn-ghost btn-icon">✕</button>
+      <button id="btn-close-modal" class="btn btn-ghost btn-icon">&#x2715;</button>
     </div>
     <div id="alert-new-project"></div>
     <form id="form-new-project" novalidate>
@@ -96,7 +96,6 @@
 
 <script type="module" src="js/dashboard.js"></script>
 <script>
-  // Fecha modal no botão cancelar
   document.getElementById('btn-cancel-modal')?.addEventListener('click', () => {
     document.getElementById('modal-new-project')?.classList.add('hidden');
   });

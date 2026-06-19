@@ -1,4 +1,4 @@
-import { ProjetoAPI, TarefaAPI, MembroAPI, ConviteAPI, ObsAPI } from "./api.js";
+import { ProjetoAPI, TarefaAPI, MembroAPI, ConviteAPI } from "./api.js";
 import { requireAuth, loadSidebar, showAlert, clearAlert, openModal, closeModal, bindModalClose, setLoading, formatDate, getQueryParam, iniciais, } from "./auth.js";
 requireAuth();
 const projetoId = Number(getQueryParam("id"));
@@ -31,18 +31,17 @@ let pollingInterval = null;
         const foiRemovido = msg.includes("No Projeto") || msg.includes("404") || msg.includes("matches");
         document.getElementById("project-body").innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:16px">
-        <div style="font-size:3rem">🚫</div>
         <h2 style="color:var(--text)">Acesso negado</h2>
         <p style="color:var(--text-3);max-width:380px">
           ${foiRemovido
-            ? "Você não tem mais acesso a este projeto. O líder pode ter removido você da equipe."
+            ? "Voce nao tem mais acesso a este projeto. O lider pode ter removido voce da equipe."
             : escHtml(msg)}
         </p>
         <a href="dashboard.html" class="btn btn-primary" style="margin-top:8px">Voltar aos projetos</a>
       </div>`;
     }
 })();
-// ── Polling ───────────────────────────────────────────────────────────────
+// -- Polling
 function startPolling() {
     if (pollingInterval)
         clearInterval(pollingInterval);
@@ -62,7 +61,7 @@ document.addEventListener("visibilitychange", () => {
     else
         startPolling();
 });
-// ── Header ────────────────────────────────────────────────────────────────
+// -- Header
 function renderHeader() {
     if (!projeto)
         return;
@@ -70,9 +69,9 @@ function renderHeader() {
     document.getElementById("project-name").textContent = projeto.nome;
     document.getElementById("project-desc").textContent = projeto.descricao;
     document.getElementById("project-badge").innerHTML =
-        `<span class="badge ${badgeClass}">${projeto.meu_papel ?? "—"}</span>`;
+        `<span class="badge ${badgeClass}">${projeto.meu_papel ?? "---"}</span>`;
     document.getElementById("project-meta").innerHTML =
-        `<span class="text-xs text-muted font-mono">Criado por ${projeto.criado_por.username} · ${formatDate(projeto.criado_em)}</span>`;
+        `<span class="text-xs text-muted font-mono">Criado por ${projeto.criado_por.username} - ${formatDate(projeto.criado_em)}</span>`;
     const actionsEl = document.getElementById("project-actions");
     if (isLider) {
         actionsEl.innerHTML = `
@@ -91,7 +90,7 @@ function renderHeader() {
     if (tabConvites)
         tabConvites.classList.toggle("hidden", !isLider);
 }
-// ── Tarefas ───────────────────────────────────────────────────────────────
+// -- Tarefas
 async function loadTarefas(silent = false) {
     const el = document.getElementById("tarefas-list");
     if (!silent)
@@ -114,7 +113,7 @@ function renderTarefas() {
     const groupConfig = [
         { key: "E", label: "Em andamento", dot: "var(--blue)", emptyMsg: "Nenhuma tarefa em andamento" },
         { key: "P", label: "Pendente", dot: "var(--text-4)", emptyMsg: "Nenhuma tarefa pendente" },
-        { key: "C", label: "Concluída", dot: "var(--green)", emptyMsg: "Nenhuma tarefa concluída" },
+        { key: "C", label: "Concluida", dot: "var(--green)", emptyMsg: "Nenhuma tarefa concluida" },
     ];
     el.innerHTML = groupConfig.map(({ key, label, dot, emptyMsg }) => {
         const list = groups[key];
@@ -131,17 +130,16 @@ function renderTarefas() {
         <div class="task-group-body">${content}</div>
       </div>`;
     }).join("");
-    el.querySelectorAll(".task-item").forEach((item) => {
-        item.addEventListener("click", (e) => {
-            if (e.target.closest("button"))
-                return;
+    el.querySelectorAll(".task-item-left").forEach((left) => {
+        const item = left.closest(".task-item");
+        if (!item)
+            return;
+        left.addEventListener("click", () => {
             window.location.href = `/task.html?projeto=${projetoId}&id=${item.dataset["id"]}`;
         });
     });
-    // Bind de troca rápida de status diretamente da lista
     el.querySelectorAll(".task-status-select").forEach((sel) => {
-        sel.addEventListener("change", (e) => {
-            e.stopPropagation();
+        sel.addEventListener("change", () => {
             const tarefaId = Number(sel.dataset["id"]);
             const novoStatus = sel.value;
             quickStatusChange(tarefaId, novoStatus, sel);
@@ -155,7 +153,7 @@ function renderTarefaItem(t) {
     const prazoHtml = t.prazo
         ? `<span class="task-chip ${atrasada ? "task-chip-red" : ""}">
          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-         ${formatDate(t.prazo)}${atrasada ? ` · <strong>${atraso}d atraso</strong>` : ""}
+         ${formatDate(t.prazo)}${atrasada ? ` - <strong>${atraso}d atraso</strong>` : ""}
        </span>`
         : "";
     const respHtml = t.responsavel
@@ -172,7 +170,7 @@ function renderTarefaItem(t) {
     <select class="task-status-select" data-id="${t.id}" title="Mudar status">
       <option value="P" ${t.status === "P" ? "selected" : ""}>Pendente</option>
       <option value="E" ${t.status === "E" ? "selected" : ""}>Em andamento</option>
-      <option value="C" ${t.status === "C" ? "selected" : ""}>Concluída</option>
+      <option value="C" ${t.status === "C" ? "selected" : ""}>Concluida</option>
     </select>`;
     const editBtn = isLider
         ? `<button class="btn btn-icon btn-ghost btn-sm btn-edit-tarefa" data-id="${t.id}" title="Editar">
@@ -198,15 +196,9 @@ async function quickStatusChange(tarefaId, novoStatus, sel) {
     const tarefa = tarefas.find((t) => t.id === tarefaId);
     if (!tarefa)
         return;
-    const statusLabels = { P: "Pendente", E: "Em andamento", C: "Concluída" };
-    const papel = isLider ? "Líder" : "Membro";
-    const obsTexto = `Status alterado de "${statusLabels[tarefa.status]}" para "${statusLabels[novoStatus]}" por ${currentNomeCompleto} (${papel}).`;
     sel.disabled = true;
     try {
         await TarefaAPI.atualizar(projetoId, tarefaId, { status: novoStatus });
-        await ObsAPI.criar(projetoId, tarefaId, obsTexto);
-        await loadTarefas(true);
-        // força re-render para refletir novo status
         tarefas = await TarefaAPI.listar(projetoId);
         renderTarefas();
     }
@@ -218,7 +210,7 @@ async function quickStatusChange(tarefaId, novoStatus, sel) {
         sel.disabled = false;
     }
 }
-// ── Membros ───────────────────────────────────────────────────────────────
+// -- Membros
 async function loadMembros() {
     const el = document.getElementById("membros-list");
     el.innerHTML = `<div class="loading-center"><span class="spinner"></span></div>`;
@@ -275,7 +267,7 @@ async function removeMembro(id, btn) {
         setLoading(btn, false, "Remover");
     }
 }
-// ── Convites ──────────────────────────────────────────────────────────────
+// -- Convites
 async function loadConvites(silent = false) {
     const el = document.getElementById("convites-list");
     if (!el)
@@ -298,7 +290,7 @@ function renderConvites() {
         el.innerHTML = `
       <div class="empty-state">
         <h3>Nenhum convite enviado</h3>
-        <p>Convide membros usando o formulário acima.</p>
+        <p>Convide membros usando o formulario acima.</p>
       </div>`;
         return;
     }
@@ -315,13 +307,14 @@ function renderConvites() {
       <span class="badge ${statusColor[c.status] ?? "badge-gray"}">${c.status_display}</span>
     </div>`).join("");
 }
-// ── Setup UI ──────────────────────────────────────────────────────────────
+// -- Setup UI
 function setupUI() {
     const btnNewTask = document.getElementById("btn-new-task");
     if (btnNewTask) {
         btnNewTask.classList.toggle("hidden", !isLider);
         btnNewTask.addEventListener("click", () => {
             resetTarefaModal();
+            updateResponsavelSelect();
             document.getElementById("tarefa-modal-title").textContent = "Nova Tarefa";
             openModal("modal-tarefa");
         });
@@ -333,8 +326,6 @@ function setupUI() {
     bindModalClose("modal-tarefa");
     document.getElementById("tarefas-list")?.addEventListener("click", (e) => {
         const target = e.target;
-        if (target.closest("select"))
-            return;
         const editBtn = target.closest(".btn-edit-tarefa");
         const delBtn = target.closest(".btn-del-tarefa");
         if (editBtn) {
@@ -357,7 +348,7 @@ function setupUI() {
     const btnInvite = document.getElementById("btn-send-invite");
     formInvite?.addEventListener("submit", (e) => { e.preventDefault(); sendInvite(btnInvite); });
 }
-// ── Tarefa CRUD ───────────────────────────────────────────────────────────
+// -- Tarefa CRUD
 let editingTarefaId = null;
 function resetTarefaModal() {
     editingTarefaId = null;
@@ -369,7 +360,7 @@ function updateResponsavelSelect() {
     if (!sel)
         return;
     const prev = sel.value;
-    sel.innerHTML = `<option value="">— Sem responsável —</option>` +
+    sel.innerHTML = `<option value="">— Sem responsavel —</option>` +
         membros.map((m) => `<option value="${m.usuario.id}">${escHtml(m.usuario.nome_completo)} (@${m.usuario.username})</option>`).join("");
     sel.value = prev;
 }
@@ -378,6 +369,7 @@ function openEditTarefa(id) {
     if (!t)
         return;
     editingTarefaId = id;
+    updateResponsavelSelect();
     document.getElementById("tarefa-titulo").value = t.titulo;
     document.getElementById("tarefa-descricao").value = t.descricao;
     document.getElementById("tarefa-status").value = t.status;
@@ -390,17 +382,17 @@ function openEditTarefa(id) {
 async function saveTarefa(btn) {
     const titulo = document.getElementById("tarefa-titulo").value.trim();
     const descricao = document.getElementById("tarefa-descricao").value.trim();
-    const status = document.getElementById("tarefa-status").value;
+    const st = document.getElementById("tarefa-status").value;
     const prazo = document.getElementById("tarefa-prazo").value || null;
     const respIdStr = document.getElementById("tarefa-responsavel").value;
     const responsavel_id = respIdStr ? Number(respIdStr) : null;
     if (!titulo || !descricao) {
-        showAlert("alert-tarefa", "Título e descrição são obrigatórios.");
+        showAlert("alert-tarefa", "Titulo e descricao sao obrigatorios.");
         return;
     }
     setLoading(btn, true, "Salvar");
     try {
-        const payload = { titulo, descricao, status, prazo, responsavel_id };
+        const payload = { titulo, descricao, status: st, prazo, responsavel_id };
         if (editingTarefaId)
             await TarefaAPI.atualizar(projetoId, editingTarefaId, payload);
         else
@@ -427,7 +419,7 @@ async function confirmDeleteTarefa(id) {
         alert(err.message);
     }
 }
-// ── Projeto Edit / Delete ─────────────────────────────────────────────────
+// -- Projeto Edit / Delete
 function openEditProject() {
     if (!projeto)
         return;
@@ -477,7 +469,7 @@ async function executeDeleteProject() {
         setLoading(btn, false, "Excluir definitivamente");
     }
 }
-// ── Convidar membro ───────────────────────────────────────────────────────
+// -- Convidar membro
 async function sendInvite(btn) {
     const username = document.getElementById("invite-username").value.trim();
     if (!username) {
@@ -498,7 +490,6 @@ async function sendInvite(btn) {
         setLoading(btn, false, "Convidar");
     }
 }
-// ── Tabs ──────────────────────────────────────────────────────────────────
 document.querySelectorAll(".tab").forEach((t) => {
     t.addEventListener("click", () => {
         const tab = t.dataset["tab"];
@@ -508,7 +499,6 @@ document.querySelectorAll(".tab").forEach((t) => {
         document.querySelector(`.tab-content[data-content="${tab}"]`)?.classList.add("active");
     });
 });
-// ── Utilitário ────────────────────────────────────────────────────────────
 function escHtml(s) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }

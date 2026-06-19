@@ -38,11 +38,10 @@ let pollingInterval: ReturnType<typeof setInterval> | null = null;
     const foiRemovido = msg.includes("No Projeto") || msg.includes("404") || msg.includes("matches");
     document.getElementById("project-body")!.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:16px">
-        <div style="font-size:3rem">🚫</div>
         <h2 style="color:var(--text)">Acesso negado</h2>
         <p style="color:var(--text-3);max-width:380px">
           ${foiRemovido
-            ? "Você não tem mais acesso a este projeto. O líder pode ter removido você da equipe."
+            ? "Voce nao tem mais acesso a este projeto. O lider pode ter removido voce da equipe."
             : escHtml(msg)}
         </p>
         <a href="dashboard.html" class="btn btn-primary" style="margin-top:8px">Voltar aos projetos</a>
@@ -50,7 +49,7 @@ let pollingInterval: ReturnType<typeof setInterval> | null = null;
   }
 })();
 
-// ── Polling ───────────────────────────────────────────────────────────────
+// -- Polling
 
 function startPolling(): void {
   if (pollingInterval) clearInterval(pollingInterval);
@@ -67,7 +66,7 @@ document.addEventListener("visibilitychange", () => {
   else startPolling();
 });
 
-// ── Header ────────────────────────────────────────────────────────────────
+// -- Header
 
 function renderHeader(): void {
   if (!projeto) return;
@@ -75,9 +74,9 @@ function renderHeader(): void {
   document.getElementById("project-name")!.textContent = projeto.nome;
   document.getElementById("project-desc")!.textContent = projeto.descricao;
   document.getElementById("project-badge")!.innerHTML =
-    `<span class="badge ${badgeClass}">${projeto.meu_papel ?? "—"}</span>`;
+    `<span class="badge ${badgeClass}">${projeto.meu_papel ?? "---"}</span>`;
   document.getElementById("project-meta")!.innerHTML =
-    `<span class="text-xs text-muted font-mono">Criado por ${projeto.criado_por.username} · ${formatDate(projeto.criado_em)}</span>`;
+    `<span class="text-xs text-muted font-mono">Criado por ${projeto.criado_por.username} - ${formatDate(projeto.criado_em)}</span>`;
 
   const actionsEl = document.getElementById("project-actions")!;
   if (isLider) {
@@ -98,7 +97,7 @@ function renderHeader(): void {
   if (tabConvites) tabConvites.classList.toggle("hidden", !isLider);
 }
 
-// ── Tarefas ───────────────────────────────────────────────────────────────
+// -- Tarefas
 
 async function loadTarefas(silent = false): Promise<void> {
   const el = document.getElementById("tarefas-list")!;
@@ -124,7 +123,7 @@ function renderTarefas(): void {
   const groupConfig = [
     { key: "E", label: "Em andamento", dot: "var(--blue)",   emptyMsg: "Nenhuma tarefa em andamento" },
     { key: "P", label: "Pendente",     dot: "var(--text-4)", emptyMsg: "Nenhuma tarefa pendente" },
-    { key: "C", label: "Concluída",    dot: "var(--green)",  emptyMsg: "Nenhuma tarefa concluída" },
+    { key: "C", label: "Concluida",    dot: "var(--green)",  emptyMsg: "Nenhuma tarefa concluida" },
   ];
 
   el.innerHTML = groupConfig.map(({ key, label, dot, emptyMsg }) => {
@@ -143,17 +142,16 @@ function renderTarefas(): void {
       </div>`;
   }).join("");
 
-  el.querySelectorAll<HTMLElement>(".task-item").forEach((item) => {
-    item.addEventListener("click", (e) => {
-      if ((e.target as HTMLElement).closest("button")) return;
+  el.querySelectorAll<HTMLElement>(".task-item-left").forEach((left) => {
+    const item = left.closest<HTMLElement>(".task-item");
+    if (!item) return;
+    left.addEventListener("click", () => {
       window.location.href = `/task.html?projeto=${projetoId}&id=${item.dataset["id"]}`;
     });
   });
 
-  // Bind de troca rápida de status diretamente da lista
   el.querySelectorAll<HTMLSelectElement>(".task-status-select").forEach((sel) => {
-    sel.addEventListener("change", (e) => {
-      e.stopPropagation();
+    sel.addEventListener("change", () => {
       const tarefaId = Number(sel.dataset["id"]);
       const novoStatus = sel.value as "P" | "E" | "C";
       quickStatusChange(tarefaId, novoStatus, sel);
@@ -169,7 +167,7 @@ function renderTarefaItem(t: Tarefa): string {
   const prazoHtml = t.prazo
     ? `<span class="task-chip ${atrasada ? "task-chip-red" : ""}">
          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-         ${formatDate(t.prazo)}${atrasada ? ` · <strong>${atraso}d atraso</strong>` : ""}
+         ${formatDate(t.prazo)}${atrasada ? ` - <strong>${atraso}d atraso</strong>` : ""}
        </span>`
     : "";
 
@@ -189,7 +187,7 @@ function renderTarefaItem(t: Tarefa): string {
     <select class="task-status-select" data-id="${t.id}" title="Mudar status">
       <option value="P" ${t.status === "P" ? "selected" : ""}>Pendente</option>
       <option value="E" ${t.status === "E" ? "selected" : ""}>Em andamento</option>
-      <option value="C" ${t.status === "C" ? "selected" : ""}>Concluída</option>
+      <option value="C" ${t.status === "C" ? "selected" : ""}>Concluida</option>
     </select>`;
 
   const editBtn = isLider
@@ -218,16 +216,9 @@ async function quickStatusChange(tarefaId: number, novoStatus: "P" | "E" | "C", 
   const tarefa = tarefas.find((t) => t.id === tarefaId);
   if (!tarefa) return;
 
-  const statusLabels: Record<string, string> = { P: "Pendente", E: "Em andamento", C: "Concluída" };
-  const papel = isLider ? "Líder" : "Membro";
-  const obsTexto = `Status alterado de "${statusLabels[tarefa.status]}" para "${statusLabels[novoStatus]}" por ${currentNomeCompleto} (${papel}).`;
-
   sel.disabled = true;
   try {
     await TarefaAPI.atualizar(projetoId, tarefaId, { status: novoStatus });
-    await ObsAPI.criar(projetoId, tarefaId, obsTexto);
-    await loadTarefas(true);
-    // força re-render para refletir novo status
     tarefas = await TarefaAPI.listar(projetoId);
     renderTarefas();
   } catch (err) {
@@ -238,7 +229,7 @@ async function quickStatusChange(tarefaId: number, novoStatus: "P" | "E" | "C", 
   }
 }
 
-// ── Membros ───────────────────────────────────────────────────────────────
+// -- Membros
 
 async function loadMembros(): Promise<void> {
   const el = document.getElementById("membros-list")!;
@@ -295,7 +286,7 @@ async function removeMembro(id: number, btn: HTMLButtonElement): Promise<void> {
   }
 }
 
-// ── Convites ──────────────────────────────────────────────────────────────
+// -- Convites
 
 async function loadConvites(silent = false): Promise<void> {
   const el = document.getElementById("convites-list");
@@ -317,7 +308,7 @@ function renderConvites(): void {
     el.innerHTML = `
       <div class="empty-state">
         <h3>Nenhum convite enviado</h3>
-        <p>Convide membros usando o formulário acima.</p>
+        <p>Convide membros usando o formulario acima.</p>
       </div>`;
     return;
   }
@@ -336,7 +327,7 @@ function renderConvites(): void {
     </div>`).join("");
 }
 
-// ── Setup UI ──────────────────────────────────────────────────────────────
+// -- Setup UI
 
 function setupUI(): void {
   const btnNewTask = document.getElementById("btn-new-task");
@@ -344,6 +335,7 @@ function setupUI(): void {
     btnNewTask.classList.toggle("hidden", !isLider);
     btnNewTask.addEventListener("click", () => {
       resetTarefaModal();
+      updateResponsavelSelect();
       document.getElementById("tarefa-modal-title")!.textContent = "Nova Tarefa";
       openModal("modal-tarefa");
     });
@@ -357,7 +349,6 @@ function setupUI(): void {
 
   document.getElementById("tarefas-list")?.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
-    if (target.closest("select")) return;
     const editBtn = target.closest<HTMLButtonElement>(".btn-edit-tarefa");
     const delBtn  = target.closest<HTMLButtonElement>(".btn-del-tarefa");
     if (editBtn) { e.stopPropagation(); openEditTarefa(Number(editBtn.dataset["id"])); }
@@ -378,7 +369,7 @@ function setupUI(): void {
   formInvite?.addEventListener("submit", (e) => { e.preventDefault(); sendInvite(btnInvite); });
 }
 
-// ── Tarefa CRUD ───────────────────────────────────────────────────────────
+// -- Tarefa CRUD
 
 let editingTarefaId: number | null = null;
 
@@ -392,7 +383,7 @@ function updateResponsavelSelect(): void {
   const sel = document.getElementById("tarefa-responsavel") as HTMLSelectElement;
   if (!sel) return;
   const prev = sel.value;
-  sel.innerHTML = `<option value="">— Sem responsável —</option>` +
+  sel.innerHTML = `<option value="">— Sem responsavel —</option>` +
     membros.map((m) => `<option value="${m.usuario.id}">${escHtml(m.usuario.nome_completo)} (@${m.usuario.username})</option>`).join("");
   sel.value = prev;
 }
@@ -401,6 +392,7 @@ function openEditTarefa(id: number): void {
   const t = tarefas.find((x) => x.id === id);
   if (!t) return;
   editingTarefaId = id;
+  updateResponsavelSelect();
   (document.getElementById("tarefa-titulo")      as HTMLInputElement).value    = t.titulo;
   (document.getElementById("tarefa-descricao")   as HTMLTextAreaElement).value = t.descricao;
   (document.getElementById("tarefa-status")      as HTMLSelectElement).value   = t.status;
@@ -414,16 +406,16 @@ function openEditTarefa(id: number): void {
 async function saveTarefa(btn: HTMLButtonElement): Promise<void> {
   const titulo    = (document.getElementById("tarefa-titulo")      as HTMLInputElement).value.trim();
   const descricao = (document.getElementById("tarefa-descricao")   as HTMLTextAreaElement).value.trim();
-  const status    = (document.getElementById("tarefa-status")      as HTMLSelectElement).value as "P" | "E" | "C";
+  const st        = (document.getElementById("tarefa-status")      as HTMLSelectElement).value as "P" | "E" | "C";
   const prazo     = (document.getElementById("tarefa-prazo")       as HTMLInputElement).value || null;
   const respIdStr = (document.getElementById("tarefa-responsavel") as HTMLSelectElement).value;
   const responsavel_id = respIdStr ? Number(respIdStr) : null;
 
-  if (!titulo || !descricao) { showAlert("alert-tarefa", "Título e descrição são obrigatórios."); return; }
+  if (!titulo || !descricao) { showAlert("alert-tarefa", "Titulo e descricao sao obrigatorios."); return; }
 
   setLoading(btn, true, "Salvar");
   try {
-    const payload = { titulo, descricao, status, prazo, responsavel_id };
+    const payload = { titulo, descricao, status: st, prazo, responsavel_id };
     if (editingTarefaId) await TarefaAPI.atualizar(projetoId, editingTarefaId, payload);
     else await TarefaAPI.criar(projetoId, payload);
     closeModal("modal-tarefa");
@@ -446,7 +438,7 @@ async function confirmDeleteTarefa(id: number): Promise<void> {
   }
 }
 
-// ── Projeto Edit / Delete ─────────────────────────────────────────────────
+// -- Projeto Edit / Delete
 
 function openEditProject(): void {
   if (!projeto) return;
@@ -493,7 +485,7 @@ async function executeDeleteProject(): Promise<void> {
   }
 }
 
-// ── Convidar membro ───────────────────────────────────────────────────────
+// -- Convidar membro
 
 async function sendInvite(btn: HTMLButtonElement): Promise<void> {
   const username = (document.getElementById("invite-username") as HTMLInputElement).value.trim();
@@ -512,8 +504,6 @@ async function sendInvite(btn: HTMLButtonElement): Promise<void> {
   }
 }
 
-// ── Tabs ──────────────────────────────────────────────────────────────────
-
 document.querySelectorAll<HTMLElement>(".tab").forEach((t) => {
   t.addEventListener("click", () => {
     const tab = t.dataset["tab"]!;
@@ -523,8 +513,6 @@ document.querySelectorAll<HTMLElement>(".tab").forEach((t) => {
     document.querySelector(`.tab-content[data-content="${tab}"]`)?.classList.add("active");
   });
 });
-
-// ── Utilitário ────────────────────────────────────────────────────────────
 
 function escHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
