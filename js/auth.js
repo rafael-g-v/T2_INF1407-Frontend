@@ -111,14 +111,9 @@ export async function loadSidebar(activePage) {
         { href: "/profile.html", key: "profile", icon: ICONS.user, label: "Perfil" },
     ];
     root.innerHTML = `
-    <div class="sidebar-logo">
-      <div class="logo-mark">
-        <div class="logo-text">Gerencie seus projetos</div>
-      </div>
-    </div>
-
     <div class="sidebar-user">
       <div class="user-info">
+        <span class="user-icon">${ICONS.user}</span>
         <div>
           <div class="user-name">${nomeCompleto}</div>
           <div class="user-role font-mono">${matricula}</div>
