@@ -1,8 +1,15 @@
+# Acadêmico — Frontend
+
+**Autor:** Rafael Gama Vergilio
+
+---
+
 ## Índice
 
 - [Descrição do Projeto](#descrição-do-projeto)
 - [Instalação e Uso Local](#instalação-e-uso-local)
 - [Compilar o TypeScript](#compilar-o-typescript)
+- [Telas da Aplicação](#telas-da-aplicação)
 - [Manual do Usuário](#manual-do-usuário)
 - [O que funcionou](#o-que-funcionou)
 - [O que não funcionou](#o-que-não-funcionou)
@@ -11,9 +18,30 @@
 
 ## Descrição do Projeto
 
-**Acadêmico** é um site para criação e gestão de projetos acadêmicos em equipe. Os usuários criam projetos, convidam colegas, distribuem tarefas e acompanham o progresso com comentários atualizados em tempo real.
+**Acadêmico** é um site estático para criação e gestão de projetos acadêmicos em equipe. Os usuários criam projetos, convidam colegas, distribuem tarefas e acompanham o progresso com comentários atualizados automaticamente via polling.
 
-O frontend é um site estático (HTML, CSS e JavaScript) que se comunica com a [API backend](../backend_clean) via chamadas HTTP. Todo o código JavaScript foi escrito em **TypeScript** e compilado antes da publicação.
+O frontend é composto por páginas HTML, CSS e JavaScript que se comunicam com a [API backend](../backend_clean) via chamadas HTTP. Todo o código JavaScript foi escrito em TypeScript e compilado antes da publicação.
+
+### Tecnologias utilizadas
+
+| Tecnologia | Finalidade |
+|---|---|
+| HTML5 | Estrutura das páginas |
+| CSS3 | Estilização e design system próprio |
+| TypeScript | Lógica do frontend (compilado para JS) |
+| Fetch API | Comunicação com a API backend |
+| JWT via localStorage | Autenticação persistente entre páginas |
+
+### Páginas implementadas
+
+| Arquivo | Página | Descrição |
+|---|---|---|
+| `index.html` | Login | Autenticação do usuário |
+| `register.html` | Cadastro | Criação de nova conta |
+| `dashboard.html` | Dashboard | Lista de projetos e convites pendentes |
+| `project.html` | Projeto | Detalhes, membros, convites e tarefas |
+| `task.html` | Tarefa | Detalhes, status, responsável e observações |
+| `profile.html` | Perfil | Edição de dados e troca de senha |
 
 ### Escopo implementado
 
@@ -32,8 +60,8 @@ O frontend é um site estático (HTML, CSS e JavaScript) que se comunica com a [
 
 ### Pré-requisitos
 
-- Qualquer servidor HTTP estático (eu usei o abaixo)
-- A API backend rodando em `http://localhost:8000`
+- A [API backend](../backend_clean) rodando em `http://localhost:8000`
+- Qualquer servidor HTTP estático (opção A ou B abaixo)
 
 ### Opção A: Python (sem instalação extra)
 
@@ -44,19 +72,53 @@ python -m http.server 5173
 
 Acesse **http://localhost:5173**.
 
-## Compilar o TypeScript
-
-O código-fonte está em `src/`. Os arquivos compilados em `js/` já estão prontos para uso.
-
-Para recompilar após alterações:
+### Opção B: npx serve
 
 ```bash
 cd frontend
-npm install          # instala o TypeScript (já declarado em package.json)
+npx serve .
+```
+
+Abrir o `index.html` diretamente como arquivo (`file://`) causa erros de CORS. Sempre use um servidor HTTP.
+
+---
+
+## Compilar o TypeScript
+
+O código-fonte TypeScript está em `src/`. Os arquivos JavaScript compilados em `js/` já estão incluídos no repositório e prontos para uso — não é necessário recompilar para rodar o site.
+
+Para recompilar após alterações nos arquivos `.ts`:
+
+```bash
+cd frontend
+npm install          # instala o TypeScript declarado em package.json
 npx tsc              # compila seguindo o tsconfig.json
 ```
 
-Os arquivos gerados em `js/` sobrescrevem os anteriores.
+Os arquivos gerados em `js/` sobrescrevem os anteriores automaticamente.
+
+### Estrutura dos arquivos TypeScript
+
+| Fonte (`src/`) | Compilado (`js/`) | Responsabilidade |
+|---|---|---|
+| `api.ts` | `api.js` | Funções de comunicação com a API e refresh de token |
+| `auth.ts` | `auth.js` | Guarda de rota e informações do usuário logado |
+| `login.ts` | `login.js` | Lógica do formulário de login |
+| `register.ts` | `register.js` | Lógica do formulário de cadastro |
+| `dashboard.ts` | `dashboard.js` | Listagem de projetos, busca e convites |
+| `project.ts` | `project.js` | Membros, convites, tarefas e filtros do projeto |
+| `task.ts` | `task.js` | Detalhes da tarefa, status e observações com polling |
+| `profile.ts` | `profile.js` | Edição de perfil e troca de senha |
+
+---
+
+## Telas da Aplicação
+
+![Tela de Login](prints/tela_login.png)
+
+![Dashboard — lista de projetos e convites](prints/tela_dashboard.png)
+
+![Página de Projeto — membros e tarefas](prints/tela_projeto.png)
 
 ---
 
@@ -87,7 +149,7 @@ Informe seu **username** e **senha** na página inicial e clique em **Entrar**.
 
 ### Aceitar ou recusar um convite
 
-Na aba **Convites** do Dashboard, clique em **Aceitar** ou **Recusar**.
+Na aba **Convites** do Dashboard, clique em **Aceitar** ou **Recusar** no convite desejado.
 
 ### Criar e gerenciar tarefas (Líder)
 
@@ -95,19 +157,30 @@ Na aba **Convites** do Dashboard, clique em **Aceitar** ou **Recusar**.
 2. Preencha título, descrição, responsável (opcional) e prazo (opcional) e clique em **Criar**.
 3. Para editar ou excluir, abra a tarefa e use os botões correspondentes.
 
-### Atualizar o status de uma tarefa
+### Atualizar o status de uma tarefa (qualquer membro)
 
-Abra a tarefa e altere o campo **Status**. Uma observação automática registra quem fez a mudança e quando.
+Abra a tarefa e altere o campo **Status** para *Pendente*, *Em andamento* ou *Concluída*. Uma observação automática registra quem fez a mudança e quando.
 
-### Deixar uma observação
+### Deixar uma observação (qualquer membro)
 
-Na página da tarefa, escreva na caixa de texto e clique em **Enviar**. As observações são atualizadas automaticamente a cada 6 segundos.
+Na página da tarefa, escreva na caixa de texto e clique em **Enviar**. As observações são atualizadas automaticamente a cada 6 segundos via polling.
 
 ### Trocar a senha
 
-1. Acesse **Perfil** pela sidebar.
+1. Acesse **Perfil** pela sidebar lateral.
 2. Clique em **Alterar senha**.
 3. Informe a senha atual, a nova senha e a confirmação e salve.
+
+### Controle de papéis na interface
+
+| Elemento | Visível para |
+|---|---|
+| Botão "Nova Tarefa" | Líder |
+| Botões editar / excluir tarefa | Líder |
+| Botão "Convidar" membro | Líder |
+| Botão remover membro | Líder |
+| Alterar status da tarefa | Todos os membros |
+| Enviar observação | Todos os membros |
 
 ---
 
@@ -127,8 +200,8 @@ Perfil com edição de dados e troca de senha. CSS responsivo com design system 
 
 ## O que não funcionou
 
-**Esqueci minha senha:** a recuperação de senha via e-mail não foi implementada. Usuários que não lembram a senha não conseguem redefini-la pelo site. A **troca de senha** para usuários logados está disponível e funcionando normalmente na página de Perfil.
+**Esqueci minha senha:** a recuperação de senha via e-mail não foi implementada. Usuários que não lembram a senha não conseguem redefini-la pelo site. A troca de senha para usuários logados está disponível e funcionando normalmente na página de Perfil.
 
 ---
 
-> Link do site:
+**Link do site:**
