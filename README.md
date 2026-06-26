@@ -1,18 +1,6 @@
 # Acadêmico — Frontend
 
-**Autor:** Rafael Gama Vergilio
-
----
-
-## Índice
-
-- [Descrição do Projeto](#descrição-do-projeto)
-- [Instalação e Uso Local](#instalação-e-uso-local)
-- [Compilar o TypeScript](#compilar-o-typescript)
-- [Telas da Aplicação](#telas-da-aplicação)
-- [Manual do Usuário](#manual-do-usuário)
-- [O que funcionou](#o-que-funcionou)
-- [O que não funcionou](#o-que-não-funcionou)
+Rafael Gama Vergilio
 
 ---
 
@@ -24,13 +12,14 @@ O frontend é composto por páginas HTML, CSS e JavaScript que se comunicam com 
 
 ### Tecnologias utilizadas
 
-| Tecnologia | Finalidade |
-|---|---|
-| HTML5 | Estrutura das páginas |
-| CSS3 | Estilização e design system próprio |
-| TypeScript | Lógica do frontend (compilado para JS) |
-| Fetch API | Comunicação com a API backend |
-| JWT via localStorage | Autenticação persistente entre páginas |
+- HTML5
+- CSS3
+- TypeScript
+- Fetch API para a comunicação com a API backend
+- JWT para autenticação 
+- Claude (auxílio no backend)
+- DeepSeek (auxílio no front-end)
+- Copilot (auxílio nos comentários e mensagens de commit)
 
 ### Páginas implementadas
 
