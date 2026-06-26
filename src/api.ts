@@ -1,18 +1,6 @@
-/**
- * api.ts — Cliente HTTP centralizado para a Academic Projects API.
- *
- * Responsabilidades:
- *  - Adicionar cabeçalho Authorization em todas as requisições autenticadas.
- *  - Tentar renovar o access token automaticamente ao receber 401.
- *  - Expor helpers tipados para cada recurso da API.
- */
-
-// URL base da API — altere para a URL de produção antes de publicar
 export const API_URL: string =
   (window as Window & { API_URL?: string }).API_URL ??
   "http://localhost:8000/api";
-
-// ── Tipos compartilhados ─────────────────────────────────────────────────
 
 export interface UsuarioResumo {
   id: number;
@@ -92,8 +80,6 @@ export interface ApiError {
   [key: string]: string | string[];
 }
 
-// ── Token storage ────────────────────────────────────────────────────────
-
 export const TokenStore = {
   getAccess: (): string | null => localStorage.getItem("access_token"),
   getRefresh: (): string | null => localStorage.getItem("refresh_token"),
@@ -111,8 +97,6 @@ export const TokenStore = {
   },
   isLogged: (): boolean => !!localStorage.getItem("access_token"),
 };
-
-// ── Token refresh ────────────────────────────────────────────────────────
 
 async function tryRefresh(): Promise<boolean> {
   const refresh = TokenStore.getRefresh();
@@ -132,11 +116,9 @@ async function tryRefresh(): Promise<boolean> {
   return false;
 }
 
-// ── Core fetch wrapper ───────────────────────────────────────────────────
-
 interface FetchOptions extends RequestInit {
-  auth?: boolean;          // true por padrão
-  noContentType?: boolean; // true para não setar Content-Type (FormData)
+  auth?: boolean;
+  noContentType?: boolean;
 }
 
 export async function apiFetch(
@@ -156,7 +138,7 @@ export async function apiFetch(
 
   let res = await fetch(`${API_URL}${path}`, { ...rest, headers });
 
-  // Tenta renovar o token uma vez em caso de 401
+  // Tenta renovar o token em caso de 401
   if (res.status === 401 && auth) {
     const renewed = await tryRefresh();
     if (renewed) {
@@ -171,14 +153,7 @@ export async function apiFetch(
   return res;
 }
 
-// ── Helper: normaliza resposta paginada ou array direto ──────────────────
-
-/**
- * O backend usa PageNumberPagination (PAGE_SIZE=20) globalmente.
- * Listagens retornam { count, next, previous, results: [...] }.
- * Algumas rotas customizadas retornam array direto.
- * Normaliza os dois formatos.
- */
+// Normaliza resposta paginada { results: [...] } ou array direto
 async function extractList<T>(res: Response): Promise<T[]> {
   const data = await res.json();
   if (data && Array.isArray(data.results)) return data.results as T[];
@@ -186,14 +161,11 @@ async function extractList<T>(res: Response): Promise<T[]> {
   return [];
 }
 
-// ── Helper: extrai mensagem de erro legível ──────────────────────────────
-
 export async function extractError(res: Response): Promise<string> {
   try {
     const data = await res.json();
     if (typeof data === "string") return data;
     if (data.detail) return data.detail;
-    // Junta todos os valores do objeto de erros
     return Object.values(data)
       .flatMap((v) => (Array.isArray(v) ? v : [v]))
       .join(" | ");
@@ -201,8 +173,6 @@ export async function extractError(res: Response): Promise<string> {
     return `Erro ${res.status}`;
   }
 }
-
-// ── Auth ─────────────────────────────────────────────────────────────────
 
 export const AuthAPI = {
   async login(username: string, password: string): Promise<LoginResponse> {
@@ -256,17 +226,6 @@ export const AuthAPI = {
     return res.json();
   },
 
-  /**
-   * Troca a senha do usuário autenticado.
-   *
-   * Em caso de sucesso, o backend retorna novos tokens JWT.
-   * O frontend deve atualizar o TokenStore para manter a sessão ativa.
-   *
-   * @param senhaAtual  Senha atual do usuário (para confirmação).
-   * @param novaSenha   Nova senha desejada.
-   * @param novaSenha2  Confirmação da nova senha.
-   * @returns           Objeto com mensagem e novos tokens JWT.
-   */
   async trocarSenha(
     senhaAtual: string,
     novaSenha: string,
@@ -278,15 +237,13 @@ export const AuthAPI = {
         senha_atual: senhaAtual,
         nova_senha: novaSenha,
         nova_senha2: novaSenha2,
-        refresh_token: TokenStore.getRefresh(), // para invalidar o token atual no backend
+        refresh_token: TokenStore.getRefresh(),
       }),
     });
     if (!res.ok) throw new Error(await extractError(res));
     return res.json();
   },
 };
-
-// ── Projetos ──────────────────────────────────────────────────────────────
 
 export const ProjetoAPI = {
   async listar(): Promise<Projeto[]> {
@@ -325,8 +282,6 @@ export const ProjetoAPI = {
   },
 };
 
-// ── Membros ───────────────────────────────────────────────────────────────
-
 export const MembroAPI = {
   async listar(projetoId: number): Promise<MembroProjeto[]> {
     const res = await apiFetch(`/projetos/${projetoId}/membros/`);
@@ -341,8 +296,6 @@ export const MembroAPI = {
     if (!res.ok) throw new Error(await extractError(res));
   },
 };
-
-// ── Convites ──────────────────────────────────────────────────────────────
 
 export const ConviteAPI = {
   async meus(): Promise<Convite[]> {
@@ -376,8 +329,6 @@ export const ConviteAPI = {
     if (!res.ok) throw new Error(await extractError(res));
   },
 };
-
-// ── Tarefas ───────────────────────────────────────────────────────────────
 
 export type TarefaPayload = {
   titulo: string;
@@ -425,8 +376,6 @@ export const TarefaAPI = {
     if (!res.ok) throw new Error(await extractError(res));
   },
 };
-
-// ── Observações ───────────────────────────────────────────────────────────
 
 export const ObsAPI = {
   async listar(projetoId: number, tarefaId: number): Promise<Observacao[]> {
